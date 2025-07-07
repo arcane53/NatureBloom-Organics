@@ -1,0 +1,670 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>NatureBloom Organics</title>
+    <!-- Tailwind CSS CDN for easy styling -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    <style>
+        /* Custom styles for the Inter font and smooth scrolling */
+        body {
+            font-family: 'Inter', sans-serif;
+            scroll-behavior: smooth;
+            background-color: #f8fafc; /* A very light off-white/greenish tint */
+        }
+        /* Hide sections by default, JavaScript will manage visibility */
+        .page-section {
+            display: none;
+        }
+        .page-section.active {
+            display: block;
+        }
+        /* Message box styling for success/error feedback */
+        #messageBox {
+            position: fixed;
+            top: 20px;
+            right: 20px;
+            background-color: #4CAF50; /* Green for success */
+            color: white;
+            padding: 15px;
+            border-radius: 8px;
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
+            z-index: 1000;
+            opacity: 0;
+            transition: opacity 0.5s ease-in-out;
+        }
+        #messageBox.show {
+            opacity: 1;
+        }
+        #messageBox.error {
+            background-color: #f44336; /* Red for error */
+        }
+        /* Styling for active/inactive payment method buttons */
+        .payment-method-btn.active {
+            background-color: #10B981; /* Tailwind green-500 */
+            color: white;
+            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+        }
+        .payment-method-btn.inactive {
+            background-color: #E5E7EB; /* Tailwind gray-200 */
+            color: #4B5563; /* Tailwind gray-700 */
+        }
+    </style>
+</head>
+<body class="text-gray-800">
+
+    <!-- Message Box for user feedback -->
+    <div id="messageBox" class="hidden"></div>
+
+    <!-- Navigation Bar -->
+    <nav class="bg-white shadow-lg p-4 sticky top-0 z-50 rounded-b-lg">
+        <div class="container mx-auto flex justify-between items-center flex-wrap">
+            <!-- Brand Logo/Name -->
+            <a href="#home" class="text-2xl font-bold text-green-700 hover:text-green-900 transition duration-300 ease-in-out rounded-md p-2" onclick="showPage('home')">
+                NatureBloom Organics
+            </a>
+
+            <!-- Navigation Links -->
+            <div class="flex space-x-6 mt-4 md:mt-0">
+                <a href="#home" class="text-gray-600 hover:text-green-700 font-medium transition duration-300 ease-in-out py-2 px-3 rounded-md hover:bg-green-50" onclick="showPage('home')">Home</a>
+                <a href="#products" class="text-gray-600 hover:text-green-700 font-medium transition duration-300 ease-in-out py-2 px-3 rounded-md hover:bg-green-50" onclick="showPage('products')">Products</a>
+                <a href="#cart" class="text-gray-600 hover:text-green-700 font-medium transition duration-300 ease-in-out py-2 px-3 rounded-md hover:bg-green-50" onclick="showPage('cart')">Cart (<span id="cartItemCount">0</span>)</a>
+                <a href="#contact" class="text-gray-600 hover:text-green-700 font-medium transition duration-300 ease-in-out py-2 px-3 rounded-md hover:bg-green-50" onclick="showPage('contact')">Contact</a>
+            </div>
+        </div>
+    </nav>
+
+    <!-- Home Section -->
+    <section id="home" class="page-section active py-16 px-4 md:px-8">
+        <div class="container mx-auto text-center">
+            <!-- Welcome Message -->
+            <h1 class="text-5xl md:text-6xl font-extrabold text-green-800 mb-6 leading-tight">
+                Welcome to NatureBloom Organics
+            </h1>
+            <p class="text-xl md:text-2xl text-gray-700 mb-8 max-w-3xl mx-auto">
+                Discover the pure essence of nature with our handcrafted organic skincare.
+                Nourish your skin, naturally.
+            </p>
+
+            <!-- New "Explore Our Products" Button -->
+            <a href="#products" class="inline-block bg-green-700 text-white py-3 px-8 rounded-full text-lg font-semibold hover:bg-green-800 transition duration-300 ease-in-out shadow-lg hover:shadow-xl mb-12" onclick="showPage('products')">
+                Explore Our Products
+            </a>
+
+            <!-- Best Seller Section -->
+            <h2 class="text-4xl font-bold text-green-700 mb-10 mt-16">Our Best Seller</h2>
+            <div class="max-w-2xl mx-auto bg-white p-8 rounded-xl shadow-lg hover:shadow-xl transition-shadow duration-300 ease-in-out transform hover:-translate-y-1">
+                <img src="https://placehold.co/600x400/d4edda/155724?text=Best+Seller+Product" alt="Best Seller Product" class="w-full h-64 object-cover rounded-md mb-6 shadow-md">
+                <h3 class="text-3xl font-semibold text-green-800 mb-3" data-product-name="Miracle Night Repair Cream">Miracle Night Repair Cream</h3>
+                <p class="text-gray-600 mb-6">
+                    Our most popular product! This rich, restorative cream works overnight to visibly reduce fine lines and deeply hydrate, leaving your skin soft and rejuvenated by morning. Made with organic avocado oil and hyaluronic acid.
+                </p>
+                <span class="text-green-700 font-bold text-2xl" data-product-price="49.99">$49.99</span>
+                <button class="inline-block bg-green-600 text-white py-3 px-8 rounded-full hover:bg-green-700 transition duration-300 ease-in-out shadow-md hover:shadow-lg mt-6" onclick="addToCart(this)">Shop Now</button>
+            </div>
+
+            <!-- Featured Products -->
+            <h2 class="text-4xl font-bold text-green-700 mb-10 mt-16">Our Featured Products</h2>
+            <div class="grid grid-cols-1 md:grid-cols-3 gap-8">
+                <!-- Product 1 -->
+                <div class="bg-white p-6 rounded-xl shadow-lg hover:shadow-xl transition-shadow duration-300 ease-in-out transform hover:-translate-y-1">
+                    <img src="https://placehold.co/400x300/e0ffe0/228B22?text=Organic+Face+Serum" alt="Organic Face Serum" class="w-full h-48 object-cover rounded-md mb-4 shadow-md">
+                    <h3 class="text-2xl font-semibold text-green-800 mb-2" data-product-name="Radiant Glow Face Serum">Radiant Glow Face Serum</h3>
+                    <p class="text-gray-600 mb-4">
+                        Infused with organic rosehip and jojoba oils, this serum deeply nourishes for a luminous complexion.
+                    </p>
+                    <span class="text-green-700 font-bold text-xl" data-product-price="34.99">$34.99</span>
+                    <button class="inline-block bg-green-600 text-white py-2 px-6 rounded-full hover:bg-green-700 transition duration-300 ease-in-out shadow-md hover:shadow-lg" onclick="addToCart(this)">Add to Cart</button>
+                </div>
+
+                <!-- Product 2 -->
+                <div class="bg-white p-6 rounded-xl shadow-lg hover:shadow-xl transition-shadow duration-300 ease-in-out transform hover:-translate-y-1">
+                    <img src="https://placehold.co/400x300/e0ffe0/228B22?text=Herbal+Cleanser" alt="Herbal Cleanser" class="w-full h-48 object-cover rounded-md mb-4 shadow-md">
+                    <h3 class="text-2xl font-semibold text-green-800 mb-2" data-product-name="Gentle Herbal Cleanser">Gentle Herbal Cleanser</h3>
+                    <p class="text-gray-600 mb-4">
+                        A refreshing blend of chamomile and calendula to gently cleanse and soothe sensitive skin.
+                    </p>
+                    <span class="text-green-700 font-bold text-xl" data-product-price="22.50">$22.50</span>
+                    <button class="inline-block bg-green-600 text-white py-2 px-6 rounded-full hover:bg-green-700 transition duration-300 ease-in-out shadow-md hover:shadow-lg" onclick="addToCart(this)">Add to Cart</button>
+                </div>
+
+                <!-- Product 3 -->
+                <div class="bg-white p-6 rounded-xl shadow-lg hover:shadow-xl transition-shadow duration-300 ease-in-out transform hover:-translate-y-1">
+                    <img src="https://placehold.co/400x300/e0ffe0/228B22?text=Body+Lotion" alt="Organic Body Lotion" class="w-full h-48 object-cover rounded-md mb-4 shadow-md">
+                    <h3 class="text-2xl font-semibold text-green-800 mb-2" data-product-name="Nourishing Body Lotion">Nourishing Body Lotion</h3>
+                    <p class="text-gray-600 mb-4">
+                        Luxurious lotion with shea butter and aloe vera for deep hydration and silky smooth skin.
+                    </p>
+                    <span class="text-green-700 font-bold text-xl" data-product-price="28.00">$28.00</span>
+                    <button class="inline-block bg-green-600 text-white py-2 px-6 rounded-full hover:bg-green-700 transition duration-300 ease-in-out shadow-md hover:shadow-lg" onclick="addToCart(this)">Add to Cart</button>
+                </div>
+            </div>
+
+            <!-- Customer Reviews Section -->
+            <h2 class="text-4xl font-bold text-green-700 mb-10 mt-16">What Our Customers Say</h2>
+            <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
+                <!-- Review 1 -->
+                <div class="bg-white p-6 rounded-xl shadow-lg flex flex-col items-center text-center">
+                    <img src="https://placehold.co/80x80/c8e6c9/2e7d32?text=👩" alt="Customer Avatar 1" class="w-20 h-20 rounded-full object-cover mb-4 border-2 border-green-300">
+                    <p class="text-gray-700 italic mb-4">"I've struggled with sensitive skin for years, and NatureBloom Organics has been a game-changer! My skin feels so calm and healthy."</p>
+                    <p class="font-semibold text-green-800">- Sarah L.</p>
+                    <div class="flex text-yellow-500 mt-2">
+                        <!-- Star icons for rating -->
+                        &#9733;&#9733;&#9733;&#9733;&#9733;
+                    </div>
+                </div>
+
+                <!-- Review 2 -->
+                <div class="bg-white p-6 rounded-xl shadow-lg flex flex-col items-center text-center">
+                    <img src="https://placehold.co/80x80/c8e6c9/2e7d32?text=👨" alt="Customer Avatar 2" class="w-20 h-20 rounded-full object-cover mb-4 border-2 border-green-300">
+                    <p class="text-gray-700 italic mb-4">"The Radiant Glow Face Serum is incredible! My complexion has never looked brighter. Plus, I love that it's all organic."</p>
+                    <p class="font-semibold text-green-800">- David R.</p>
+                    <div class="flex text-yellow-500 mt-2">
+                        &#9733;&#9733;&#9733;&#9733;&#9734;
+                    </div>
+                </div>
+
+                <!-- Review 3 -->
+                <div class="bg-white p-6 rounded-xl shadow-lg flex flex-col items-center text-center">
+                    <img src="https://placehold.co/80x80/c8e6c9/2e7d32?text=👧" alt="Customer Avatar 3" class="w-20 h-20 rounded-full object-cover mb-4 border-2 border-green-300">
+                    <p class="text-gray-700 italic mb-4">"Finally, a skincare brand I can trust. Their commitment to natural ingredients and sustainability is truly inspiring."</p>
+                    <p class="font-semibold text-green-800">- Emily P.</p>
+                    <div class="flex text-yellow-500 mt-2">
+                        &#9733;&#9733;&#9733;&#9733;&#9733;
+                    </div>
+                </div>
+            </div>
+
+            <!-- Call to Action for Contact -->
+            <div class="mt-16 bg-green-100 p-8 rounded-xl shadow-inner max-w-2xl mx-auto">
+                <h2 class="text-3xl font-bold text-green-800 mb-4">Have Questions?</h2>
+                <p class="text-lg text-gray-700 mb-6">
+                    We'd love to hear from you! Reach out to us for any inquiries or custom orders.
+                </p>
+                <a href="#contact" class="inline-block bg-green-700 text-white py-3 px-8 rounded-full text-lg font-semibold hover:bg-green-800 transition duration-300 ease-in-out shadow-lg hover:shadow-xl" onclick="showPage('contact')">
+                    Contact Us
+                </a>
+            </div>
+        </div>
+    </section>
+
+    <!-- Products Section -->
+    <section id="products" class="page-section py-16 px-4 md:px-8">
+        <div class="container mx-auto text-center">
+            <h1 class="text-5xl md:text-6xl font-extrabold text-green-800 mb-10">Our Full Product Range</h1>
+            <p class="text-xl md:text-2xl text-gray-700 mb-12 max-w-3xl mx-auto">
+                Explore our complete collection of organic skincare essentials, crafted with purity and passion.
+            </p>
+
+            <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
+                <!-- Product 1 -->
+                <div class="bg-white p-6 rounded-xl shadow-lg hover:shadow-xl transition-shadow duration-300 transform hover:-translate-y-1">
+                    <img src="https://placehold.co/400x300/e0ffe0/228B22?text=Organic+Face+Serum" alt="Organic Face Serum" class="w-full h-48 object-cover rounded-md mb-4 shadow-md">
+                    <h3 class="text-2xl font-semibold text-green-800 mb-2" data-product-name="Radiant Glow Face Serum">Radiant Glow Face Serum</h3>
+                    <p class="text-gray-600 mb-4">
+                        A concentrated blend of organic rosehip, argan, and vitamin E oils. Promotes elasticity, reduces fine lines, and gives a natural, healthy glow. Ideal for all skin types.
+                    </p>
+                    <span class="text-green-700 font-bold text-xl" data-product-price="34.99">$34.99</span>
+                    <button class="block w-full mt-4 bg-green-600 text-white py-2 px-4 rounded-full hover:bg-green-700 transition duration-300 ease-in-out shadow-md" onclick="addToCart(this)">Add to Cart</button>
+                </div>
+
+                <!-- Product 2 -->
+                <div class="bg-white p-6 rounded-xl shadow-lg hover:shadow-xl transition-shadow duration-300 transform hover:-translate-y-1">
+                    <img src="https://placehold.co/400x300/e0ffe0/228B22?text=Herbal+Cleanser" alt="Herbal Cleanser" class="w-full h-48 object-cover rounded-md mb-4 shadow-md">
+                    <h3 class="text-2xl font-semibold text-green-800 mb-2" data-product-name="Gentle Herbal Cleanser">Gentle Herbal Cleanser</h3>
+                    <p class="text-gray-600 mb-4">
+                        Formulated with organic chamomile, calendula, and aloe vera. This mild cleanser removes impurities without stripping natural oils, leaving skin soft and refreshed.
+                    </p>
+                    <span class="text-green-700 font-bold text-xl" data-product-price="22.50">$22.50</span>
+                    <button class="block w-full mt-4 bg-green-600 text-white py-2 px-4 rounded-full hover:bg-green-700 transition duration-300 ease-in-out shadow-md" onclick="addToCart(this)">Add to Cart</button>
+                </div>
+
+                <!-- Product 3 -->
+                <div class="bg-white p-6 rounded-xl shadow-lg hover:shadow-xl transition-shadow duration-300 transform hover:-translate-y-1">
+                    <img src="https://placehold.co/400x300/e0ffe0/228B22?text=Body+Lotion" alt="Organic Body Lotion" class="w-full h-48 object-cover rounded-md mb-4 shadow-md">
+                    <h3 class="text-2xl font-semibold text-green-800 mb-2" data-product-name="Nourishing Body Lotion">Nourishing Body Lotion</h3>
+                    <p class="text-gray-600 mb-4">
+                        Rich and creamy, made with organic shea butter, cocoa butter, and aloe vera. Provides long-lasting hydration and a delicate natural scent.
+                    </p>
+                    <span class="text-green-700 font-bold text-xl" data-product-price="28.00">$28.00</span>
+                    <button class="block w-full mt-4 bg-green-600 text-white py-2 px-4 rounded-full hover:bg-green-700 transition duration-300 ease-in-out shadow-md" onclick="addToCart(this)">Add to Cart</button>
+                </div>
+
+                <!-- Product 4 -->
+                <div class="bg-white p-6 rounded-xl shadow-lg hover:shadow-xl transition-shadow duration-300 transform hover:-translate-y-1">
+                    <img src="https://placehold.co/400x300/e0ffe0/228B22?text=Clay+Mask" alt="Detox Clay Mask" class="w-full h-48 object-cover rounded-md mb-4 shadow-md">
+                    <h3 class="text-2xl font-semibold text-green-800 mb-2" data-product-name="Purifying Clay Mask">Purifying Clay Mask</h3>
+                    <p class="text-gray-600 mb-4">
+                        A detoxifying mask with bentonite clay and green tea extract. Draws out impurities and minimizes pores for a clear, refreshed complexion.
+                    </p>
+                    <span class="text-green-700 font-bold text-xl" data-product-price="25.99">$25.99</span>
+                    <button class="block w-full mt-4 bg-green-600 text-white py-2 px-4 rounded-full hover:bg-green-700 transition duration-300 ease-in-out shadow-md" onclick="addToCart(this)">Add to Cart</button>
+                </div>
+
+                <!-- Product 5 -->
+                <div class="bg-white p-6 rounded-xl shadow-lg hover:shadow-xl transition-shadow duration-300 transform hover:-translate-y-1">
+                    <img src="https://placehold.co/400x300/e0ffe0/228B22?text=Lip+Balm" alt="Organic Lip Balm" class="w-full h-48 object-cover rounded-md mb-4 shadow-md">
+                    <h3 class="text-2xl font-semibold text-green-800 mb-2" data-product-name="Hydrating Lip Balm">Hydrating Lip Balm</h3>
+                    <p class="text-gray-600 mb-4">
+                        Nourish and protect your lips with our beeswax and coconut oil blend. Keeps lips soft, smooth, and moisturized all day.
+                    </p>
+                    <span class="text-green-700 font-bold text-xl" data-product-price="9.50">$9.50</span>
+                    <button class="block w-full mt-4 bg-green-600 text-white py-2 px-4 rounded-full hover:bg-green-700 transition duration-300 ease-in-out shadow-md" onclick="addToCart(this)">Add to Cart</button>
+                </div>
+
+                <!-- Product 6 -->
+                <div class="bg-white p-6 rounded-xl shadow-lg hover:shadow-xl transition-shadow duration-300 transform hover:-translate-y-1">
+                    <img src="https://placehold.co/400x300/e0ffe0/228B22?text=Eye+Cream" alt="Revitalizing Eye Cream" class="w-full h-48 object-cover rounded-md mb-4 shadow-md">
+                    <h3 class="text-2xl font-semibold text-green-800 mb-2" data-product-name="Revitalizing Eye Cream">Revitalizing Eye Cream</h3>
+                    <p class="text-gray-600 mb-4">
+                        Target delicate under-eye skin with caffeine and cucumber extract. Reduces puffiness and dark circles for a brighter look.
+                    </p>
+                    <span class="text-green-700 font-bold text-xl" data-product-price="39.00">$39.00</span>
+                    <button class="block w-full mt-4 bg-green-600 text-white py-2 px-4 rounded-full hover:bg-green-700 transition duration-300 ease-in-out shadow-md" onclick="addToCart(this)">Add to Cart</button>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Cart Section -->
+    <section id="cart" class="page-section py-16 px-4 md:px-8">
+        <div class="container mx-auto text-center">
+            <h1 class="text-5xl md:text-6xl font-extrabold text-green-800 mb-10">Your Shopping Cart</h1>
+            <p class="text-xl md:text-2xl text-gray-700 mb-12 max-w-3xl mx-auto">
+                Review your selected organic skincare products before checkout.
+            </p>
+
+            <div class="max-w-3xl mx-auto bg-white p-8 rounded-xl shadow-lg">
+                <div id="cartItemsContainer" class="space-y-4 text-left">
+                    <!-- Cart items will be dynamically added here -->
+                    <p class="text-gray-600 text-lg" id="emptyCartMessage">Your cart is empty.</p>
+                </div>
+                <div class="border-t border-gray-200 mt-8 pt-6 flex justify-between items-center">
+                    <span class="text-2xl font-bold text-green-800">Total:</span>
+                    <span class="text-2xl font-bold text-green-800" id="cartTotal">$0.00</span>
+                </div>
+                <button class="w-full mt-8 bg-green-700 text-white py-3 px-6 rounded-full text-lg font-semibold hover:bg-green-800 transition duration-300 ease-in-out shadow-lg hover:shadow-xl" onclick="proceedToCheckout()">
+                    Proceed to Checkout
+                </button>
+            </div>
+        </div>
+    </section>
+
+    <!-- Checkout Section (Simulated Payment Gateway) -->
+    <section id="checkout" class="page-section py-16 px-4 md:px-8">
+        <div class="container mx-auto text-center">
+            <h1 class="text-5xl md:text-6xl font-extrabold text-green-800 mb-10">Checkout</h1>
+            <p class="text-xl md:text-2xl text-gray-700 mb-12 max-w-3xl mx-auto">
+                Please enter your payment details to complete your order.
+            </p>
+
+            <div class="max-w-xl mx-auto bg-white p-8 rounded-xl shadow-lg">
+                <div class="bg-red-100 border border-red-400 text-red-700 px-4 py-3 rounded-md mb-6 text-left">
+                    <strong class="font-bold">Important:</strong>
+                    <span class="block sm:inline">This is a **simulated payment gateway** for demonstration purposes only. No real payment will be processed, and no sensitive data will be stored.</span>
+                </div>
+
+                <h2 class="text-3xl font-bold text-green-800 mb-6">Payment Information</h2>
+                <div class="flex justify-center space-x-4 mb-6">
+                    <button type="button" class="px-6 py-2 rounded-full font-semibold transition duration-300 ease-in-out payment-method-btn" id="creditCardBtn" onclick="showPaymentMethod('creditCard')">Credit Card</button>
+                    <button type="button" class="px-6 py-2 rounded-full font-semibold transition duration-300 ease-in-out payment-method-btn" id="upiBtn" onclick="showPaymentMethod('upi')">UPI</button>
+                </div>
+
+                <form id="paymentForm" class="space-y-6">
+                    <!-- Credit Card Fields -->
+                    <div id="creditCardFields">
+                        <div>
+                            <label for="cardNumber" class="block text-left text-gray-700 text-lg font-medium mb-2">Card Number</label>
+                            <input type="text" id="cardNumber" name="cardNumber" class="w-full p-3 border border-gray-300 rounded-md focus:ring-2 focus:ring-green-500 focus:border-transparent transition duration-200" placeholder="XXXX XXXX XXXX XXXX" pattern="[0-9]{13,16}" title="Credit card number (13-16 digits)" required>
+                        </div>
+                        <div class="grid grid-cols-2 gap-4">
+                            <div>
+                                <label for="expiryDate" class="block text-left text-gray-700 text-lg font-medium mb-2">Expiry Date (MM/YY)</label>
+                                <input type="text" id="expiryDate" name="expiryDate" class="w-full p-3 border border-gray-300 rounded-md focus:ring-2 focus:ring-green-500 focus:border-transparent transition duration-200" placeholder="MM/YY" pattern="(0[1-9]|1[0-2])\/?([0-9]{2})" title="Expiry date in MM/YY format" required>
+                            </div>
+                            <div>
+                                <label for="cvv" class="block text-left text-gray-700 text-lg font-medium mb-2">CVV</label>
+                                <input type="text" id="cvv" name="cvv" class="w-full p-3 border border-gray-300 rounded-md focus:ring-2 focus:ring-green-500 focus:border-transparent transition duration-200" placeholder="XXX" pattern="[0-9]{3,4}" title="CVV (3 or 4 digits)" required>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- UPI Fields -->
+                    <div id="upiFields" class="hidden">
+                        <div>
+                            <label for="upiId" class="block text-left text-gray-700 text-lg font-medium mb-2">UPI ID</label>
+                            <input type="text" id="upiId" name="upiId" class="w-full p-3 border border-gray-300 rounded-md focus:ring-2 focus:ring-green-500 focus:border-transparent transition duration-200" placeholder="yourname@bankupi" required>
+                        </div>
+                    </div>
+
+                    <button type="submit" class="w-full bg-green-700 text-white py-3 px-6 rounded-full text-lg font-semibold hover:bg-green-800 transition duration-300 ease-in-out shadow-lg hover:shadow-xl">
+                        Pay Now
+                    </button>
+                </form>
+            </div>
+        </div>
+    </section>
+
+    <!-- Thank You Section -->
+    <section id="thankyou" class="page-section py-16 px-4 md:px-8">
+        <div class="container mx-auto text-center">
+            <h1 class="text-5xl md:text-6xl font-extrabold text-green-800 mb-6 leading-tight">
+                Thank You for Your Order!
+            </h1>
+            <p class="text-xl md:text-2xl text-gray-700 mb-12 max-w-3xl mx-auto">
+                Your simulated order has been placed successfully.
+                We appreciate your business and hope you enjoy your NatureBloom Organics products!
+            </p>
+            <div class="bg-green-100 p-8 rounded-xl shadow-inner max-w-2xl mx-auto">
+                <h2 class="text-3xl font-bold text-green-800 mb-4">What's Next?</h2>
+                <p class="text-lg text-gray-700 mb-6">
+                    While this was a simulated purchase, in a real scenario, you would receive an order confirmation email shortly.
+                    Feel free to explore more of our products or contact us if you have any questions.
+                </p>
+                <a href="#products" class="inline-block bg-green-700 text-white py-3 px-8 rounded-full text-lg font-semibold hover:bg-green-800 transition duration-300 ease-in-out shadow-lg hover:shadow-xl" onclick="showPage('products')">
+                    Continue Shopping
+                </a>
+            </div>
+        </div>
+    </section>
+
+    <!-- Contact Section -->
+    <section id="contact" class="page-section py-16 px-4 md:px-8">
+        <div class="container mx-auto text-center">
+            <h1 class="text-5xl md:text-6xl font-extrabold text-green-800 mb-10">Get in Touch</h1>
+            <p class="text-xl md:text-2xl text-gray-700 mb-12 max-w-3xl mx-auto">
+                We'd love to hear from you! Whether you have questions about our products, need assistance, or just want to say hello, feel free to reach out.
+            </p>
+
+            <div class="max-w-xl mx-auto bg-white p-8 rounded-xl shadow-lg">
+                <h2 class="text-3xl font-bold text-green-800 mb-6">Contact Form</h2>
+                <form action="#" method="POST" class="space-y-6">
+                    <div>
+                        <label for="name" class="block text-left text-gray-700 text-lg font-medium mb-2">Your Name</label>
+                        <input type="text" id="name" name="name" class="w-full p-3 border border-gray-300 rounded-md focus:ring-2 focus:ring-green-500 focus:border-transparent transition duration-200" placeholder="John Doe" required>
+                    </div>
+                    <div>
+                        <label for="email" class="block text-left text-gray-700 text-lg font-medium mb-2">Your Email</label>
+                        <input type="email" id="email" name="email" class="w-full p-3 border border-gray-300 rounded-md focus:ring-2 focus:ring-green-500 focus:border-transparent transition duration-200" placeholder="john.doe@example.com" required>
+                    </div>
+                    <div>
+                        <label for="subject" class="block text-left text-gray-700 text-lg font-medium mb-2">Subject</label>
+                        <input type="text" id="subject" name="subject" class="w-full p-3 border border-gray-300 rounded-md focus:ring-2 focus:ring-green-500 focus:border-transparent transition duration-200" placeholder="Inquiry about products">
+                    </div>
+                    <div>
+                        <label for="message" class="block text-left text-gray-700 text-lg font-medium mb-2">Your Message</label>
+                        <textarea id="message" name="message" rows="6" class="w-full p-3 border border-gray-300 rounded-md focus:ring-2 focus:ring-green-500 focus:border-transparent transition duration-200 resize-y" placeholder="Type your message here..." required></textarea>
+                    </div>
+                    <button type="submit" class="w-full bg-green-600 text-white py-3 px-6 rounded-full text-lg font-semibold hover:bg-green-700 transition duration-300 ease-in-out shadow-lg hover:shadow-xl">
+                        Send Message
+                    </button>
+                </form>
+                <p class="text-gray-600 text-center mt-8">
+                    Alternatively, you can reach us at:
+                </p>
+                <p class="text-lg text-green-700 font-semibold mt-2">
+                    Email: <a href="mailto:info@naturebloomorganics.com" class="hover:underline">info@naturebloomorganics.com</a>
+                </p>
+                <p class="text-lg text-green-700 font-semibold mt-2">
+                    Phone: <a href="tel:+1234567890" class="hover:underline">+1 (234) 567-890</a>
+                </p>
+                <p class="text-lg text-green-700 font-semibold mt-2">
+                    Address: 123 Green Valley Rd, Eco City, EC 12345
+                </p>
+            </div>
+        </div>
+    </section>
+
+    <!-- Footer -->
+    <footer class="bg-gray-800 text-white p-6 text-center mt-16 rounded-t-lg">
+        <div class="container mx-auto">
+            <p>&copy; 2025 NatureBloom Organics. All rights reserved.</p>
+            <div class="flex justify-center space-x-4 mt-4">
+                <a href="#" class="text-gray-400 hover:text-white transition duration-300">Privacy Policy</a>
+                <a href="#" class="text-gray-400 hover:text-white transition duration-300">Terms of Service</a>
+            </div>
+        </div>
+    </footer>
+
+    <script>
+        // Global array to store cart items
+        let cart = [];
+        let currentPaymentMethod = 'creditCard'; // Default payment method
+
+        // Function to show messages to the user
+        function showMessage(message, type = 'success') {
+            const messageBox = document.getElementById('messageBox');
+            if (!messageBox) { // Add null check for messageBox
+                console.error("Message box element not found.");
+                return;
+            }
+            messageBox.textContent = message;
+            messageBox.className = 'hidden'; // Reset classes
+            if (type === 'success') {
+                messageBox.classList.remove('error');
+                messageBox.style.backgroundColor = '#4CAF50'; // Green
+            } else if (type === 'error') {
+                messageBox.classList.add('error');
+                messageBox.style.backgroundColor = '#f44336'; // Red
+            }
+            messageBox.classList.add('show');
+            messageBox.classList.remove('hidden');
+
+            setTimeout(() => {
+                messageBox.classList.remove('show');
+                messageBox.classList.add('hidden');
+            }, 3000); // Hide after 3 seconds
+        }
+
+        // JavaScript to handle page section visibility
+        function showPage(pageId) {
+            // Get all page sections
+            const sections = document.querySelectorAll('.page-section');
+            // Hide all sections
+            sections.forEach(section => {
+                section.classList.remove('active');
+            });
+
+            // Show the requested section
+            const activeSection = document.getElementById(pageId);
+            if (activeSection) {
+                activeSection.classList.add('active');
+                // Scroll to the top of the page when navigating
+                window.scrollTo({ top: 0, behavior: 'smooth' });
+            }
+
+            // If navigating to the cart page, update its content
+            if (pageId === 'cart') {
+                updateCartDisplay();
+            } else if (pageId === 'checkout') {
+                // Ensure the correct payment method is displayed when entering checkout
+                showPaymentMethod(currentPaymentMethod);
+            }
+        }
+
+        // Function to add a product to the cart
+        function addToCart(buttonElement) {
+            const productCard = buttonElement.closest('div');
+            const productName = productCard.querySelector('[data-product-name]').dataset.productName;
+            const productPrice = parseFloat(productCard.querySelector('[data-product-price]').dataset.productPrice);
+
+            const existingItem = cart.find(item => item.name === productName);
+
+            if (existingItem) {
+                existingItem.quantity++;
+            } else {
+                cart.push({ name: productName, price: productPrice, quantity: 1 });
+            }
+
+            updateCartCount();
+            showMessage(`${productName} added to cart!`, 'success');
+        }
+
+        // Function to update the cart item count in the navigation
+        function updateCartCount() {
+            const cartItemCount = document.getElementById('cartItemCount');
+            if (cartItemCount) { // Add null check for cartItemCount
+                const totalItems = cart.reduce((sum, item) => sum + item.quantity, 0);
+                cartItemCount.textContent = totalItems;
+            }
+        }
+
+        // Function to update the cart display on the cart page
+        function updateCartDisplay() {
+            const cartItemsContainer = document.getElementById('cartItemsContainer');
+            const cartTotalElement = document.getElementById('cartTotal');
+            const emptyCartMessage = document.getElementById('emptyCartMessage');
+
+            // Null checks for all elements used in this function
+            if (!cartItemsContainer || !cartTotalElement || !emptyCartMessage) {
+                console.error("One or more cart display elements not found. Cannot update cart display.");
+                return; // Exit if elements are not found
+            }
+
+            let total = 0;
+
+            // Clear previous items
+            cartItemsContainer.innerHTML = '';
+
+            if (cart.length === 0) {
+                emptyCartMessage.style.display = 'block';
+            } else {
+                emptyCartMessage.style.display = 'none';
+                cart.forEach(item => {
+                    const itemElement = document.createElement('div');
+                    itemElement.className = 'flex justify-between items-center p-3 border-b border-gray-100 last:border-b-0';
+                    itemElement.innerHTML = `
+                        <span class="text-gray-800 font-medium">${item.name} (x${item.quantity})</span>
+                        <span class="text-green-700 font-semibold">$${(item.price * item.quantity).toFixed(2)}</span>
+                    `;
+                    cartItemsContainer.appendChild(itemElement);
+                    total += item.price * item.quantity;
+                });
+            }
+
+            cartTotalElement.textContent = `$${total.toFixed(2)}`;
+        }
+
+        // Function to proceed from cart to checkout
+        function proceedToCheckout() {
+            if (cart.length === 0) {
+                showMessage('Your cart is empty. Please add items before checking out.', 'error');
+                return;
+            }
+            showPage('checkout');
+        }
+
+        // Function to toggle between payment methods
+        function showPaymentMethod(method) {
+            const creditCardFields = document.getElementById('creditCardFields');
+            const upiFields = document.getElementById('upiFields');
+            const creditCardBtn = document.getElementById('creditCardBtn');
+            const upiBtn = document.getElementById('upiBtn');
+
+            // Null checks for buttons and fields container
+            if (!creditCardFields || !upiFields || !creditCardBtn || !upiBtn) {
+                console.error("One or more payment method elements not found. Cannot show payment method.");
+                return;
+            }
+
+            currentPaymentMethod = method; // Update global state
+
+            // Update button styles
+            creditCardBtn.classList.remove('active', 'inactive');
+            upiBtn.classList.remove('active', 'inactive');
+
+            // Also add null checks for the input fields before setting attributes
+            const cardNumberInput = document.getElementById('cardNumber');
+            const expiryDateInput = document.getElementById('expiryDate');
+            const cvvInput = document.getElementById('cvv');
+            const upiIdInput = document.getElementById('upiId');
+
+            if (method === 'creditCard') {
+                creditCardFields.classList.remove('hidden');
+                upiFields.classList.add('hidden');
+                creditCardBtn.classList.add('active');
+                upiBtn.classList.add('inactive');
+                // Set required attribute for credit card fields, with null checks
+                if (cardNumberInput) cardNumberInput.setAttribute('required', 'required');
+                if (expiryDateInput) expiryDateInput.setAttribute('required', 'required');
+                if (cvvInput) cvvInput.setAttribute('required', 'required');
+                if (upiIdInput) upiIdInput.removeAttribute('required');
+            } else if (method === 'upi') {
+                creditCardFields.classList.add('hidden');
+                upiFields.classList.remove('hidden');
+                upiBtn.classList.add('active');
+                creditCardBtn.classList.add('inactive');
+                // Set required attribute for UPI fields, with null checks
+                if (upiIdInput) upiIdInput.setAttribute('required', 'required');
+                if (cardNumberInput) cardNumberInput.removeAttribute('required');
+                if (expiryDateInput) expiryDateInput.removeAttribute('required');
+                if (cvvInput) cvvInput.removeAttribute('required');
+            }
+        }
+
+        // Handle simulated payment form submission
+        document.addEventListener('DOMContentLoaded', () => {
+            const paymentForm = document.getElementById('paymentForm');
+            if (paymentForm) {
+                paymentForm.addEventListener('submit', function(event) {
+                    event.preventDefault(); // Prevent actual form submission
+
+                    let isValid = true;
+                    // Ensure input elements exist before accessing their values
+                    const cardNumberInput = document.getElementById('cardNumber');
+                    const expiryDateInput = document.getElementById('expiryDate');
+                    const cvvInput = document.getElementById('cvv');
+                    const upiIdInput = document.getElementById('upiId');
+
+                    if (currentPaymentMethod === 'creditCard') {
+                        if (!cardNumberInput || !expiryDateInput || !cvvInput || !cardNumberInput.value || !expiryDateInput.value || !cvvInput.value) {
+                            isValid = false;
+                            showMessage('Please fill in all credit card details.', 'error');
+                        }
+                    } else if (currentPaymentMethod === 'upi') {
+                        if (!upiIdInput || !upiIdInput.value) {
+                            isValid = false;
+                            showMessage('Please enter your UPI ID.', 'error');
+                        }
+                    }
+
+                    if (!isValid) {
+                        return;
+                    }
+
+                    // Simulate payment processing delay
+                    showMessage('Processing payment...', 'success');
+                    setTimeout(() => {
+                        // In a real application, you would send data to a backend here
+                        // For this simulation, we just clear the cart and go to thank you page
+                        cart = []; // Clear the cart after "successful" payment
+                        updateCartCount(); // Update cart count in nav
+                        showPage('thankyou');
+                    }, 2000); // Simulate 2-second processing
+                });
+            }
+
+            // Initialize the page view based on URL hash or default to home
+            const hash = window.location.hash.substring(1); // Get hash without '#'
+            if (hash && document.getElementById(hash)) {
+                showPage(hash);
+            } else {
+                showPage('home'); // Default to home page
+            }
+            updateCartCount(); // Initialize cart count on load
+            // showPaymentMethod(currentPaymentMethod); // Removed this unconditional call as it might cause issues if checkout elements aren't ready
+        });
+
+        // Listen for hash changes (e.g., when using browser back/forward buttons)
+        window.addEventListener('hashchange', () => {
+            const hash = window.location.hash.substring(1);
+            if (hash && document.getElementById(hash)) {
+                showPage(hash);
+            } else {
+                showPage('home');
+            }
+        });
+    </script>
+</body>
+</html>
